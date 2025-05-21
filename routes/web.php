@@ -8,6 +8,9 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\UserAccountController;
+use App\Http\Middleware\SessionUserAccountMW;
+
 
 
 Route::get('/viewuser',[UserController::class,'viewusers']);
@@ -85,6 +88,28 @@ Route::get('/pattern', [PagesController::class, 'pattern'])->name('pattern');
 });
 
 Route::get('/maintenance',[PagesController::class,'maintenance']);
+
+
+
+
+// Public Routes
+Route::get('/login', [UserAccountController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [UserAccountController::class, 'login'])->name('loginUser');
+
+Route::get('/new-user', [UserAccountController::class, 'showNewUserForm'])->name('showNewUserForm');
+Route::post('/store-user', [UserAccountController::class, 'storeNewUser'])->name('storeUser');
+
+// Protected routes
+Route::middleware([SessionUserAccountMW::class])->group(function () {
+    Route::get('/dashboard', [UserAccountController::class, 'dashboard'])->name('dashboard');
+
+    Route::get('/update-password', [UserAccountController::class, 'showUpdatePasswordForm'])->name('updatePassword');
+    Route::post('/update-password', [UserAccountController::class, 'updatePassword']);
+
+    Route::get('/logout', [UserAccountController::class, 'logout'])->name('logout');
+});
+
+
 
 // Route::get('/try/{message}',
 // [RedirectController::class,'redirectme'])

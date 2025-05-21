@@ -207,15 +207,20 @@
     <!-- Navbar Section -->
     @section('navbar')
     <div class="navbar">
-        <a href="{{ url('/profile') }}">Profile</a>
-        <a href="{{ url('/about-us') }}">About Us</a>
-        <a href="{{ url('/contact-us') }}">Contact Us</a>
-        <a href="{{ url('/conditional') }}">Conditional Statement</a>
-        <a href="{{ url('/students') }}">Student List</a>
-        <a href="{{ route('student.index') }}">Student Information</a>
-        {{-- <a href="{{ url('/try') }}">Redirect Me</a> --}}
-        
-    </div>
+    <a href="{{ url('/dashboard') }}">Dashboard</a>
+    <a href="{{ url('/profile') }}">Profile</a>
+    <a href="{{ url('/about-us') }}">About Us</a>
+    <a href="{{ url('/contact-us') }}">Contact Us</a>
+    <a href="{{ url('/conditional') }}">Conditional Statement</a>
+    <a href="{{ url('/students') }}">Student List</a>
+    <a href="{{ route('student.index') }}">Student Information</a>
+
+    {{-- Logout Button --}}
+    <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+        @csrf
+        <button type="submit" class="btn btn-danger" style="margin-left: 12px;">Logout</button>
+    </form>
+</div>
     @show
 
     <!-- Main Content Section -->
