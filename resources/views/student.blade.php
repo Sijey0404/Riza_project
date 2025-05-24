@@ -1,201 +1,125 @@
 @extends('layout.layout1')
 
-@section('title', 'Student')
+@section('title', 'Student Information')
 
 @section('content')
 
+<div class="card">
+    <div class="card-header">
+        <h1 class="card-title">Student Information</h1>
+        <a href="/student/create" class="btn btn-primary">
+            <i class='bx bx-plus'></i> Add Student
+        </a>
+    </div>
+
+    <div class="info-banner">
+        <strong><i class='bx bx-info-circle'></i> Note:</strong> Each student is automatically assigned a user account. The student's email is used as the username, and the default password follows the format: StudentID + FirstName (e.g., S-25-1John).
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>Student ID</th>
+                    <th>Full Name</th>
+                    <th>Contact Info</th>
+                    <th class="highlight-column">Username</th>
+                    <th class="highlight-column">Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if($students && $students->count() > 0)
+                    @foreach($students as $stud)
+                        <tr>
+                            <td>
+                                @if($stud->image_path)
+                                    <img src="{{ asset($stud->image_path) }}" alt="Student Photo" class="student-thumbnail">
+                                @else
+                                    <div class="no-image-placeholder">
+                                        <i class='bx bx-user'></i>
+                                    </div>
+                                @endif
+                            </td>
+                            <td>{{ $stud->studentid }}</td>
+                            <td>{{ $stud->lname }}, {{ $stud->fname }} {{ $stud->mname }}</td>
+                            <td>
+                                <div><i class='bx bx-phone'></i> {{ $stud->contactno }}</div>
+                                <div><i class='bx bx-envelope'></i> {{ $stud->email }}</div>
+                            </td>
+                            <td>{{ $stud->username ?? 'N/A' }}</td>
+                            <td>
+                                @if($stud->status)
+                                    <span class="badge badge-{{ strtolower($stud->status) === 'active' ? 'success' : (strtolower($stud->status) === 'inactive' ? 'danger' : 'warning') }}">
+                                        {{ $stud->status }}
+                                    </span>
+                                @else
+                                    <span>N/A</span>
+                                @endif
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="/student/{{$stud->id}}" class="btn btn-info">
+                                        <i class='bx bx-show'></i>
+                                    </a>
+                                    <a href="/student/{{$stud->id}}/edit" class="btn btn-warning">
+                                        <i class='bx bx-edit'></i>
+                                    </a>
+                                    <form action="/student/{{$stud->id}}" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class='bx bx-trash'></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td colspan="7" class="text-center">No students found</td>
+                    </tr>
+                @endif
+            </tbody>
+        </table>
+        
+        <div class="pagination-container">
+            {{ $students->links() }}
+        </div>
+    </div>
+</div>
+
 <style>
-    body {
-        background-color: #f9fbfd; /* Light academic blue */
-        font-family: 'Segoe UI', sans-serif;
-        color: #333;
-        margin: 0;
-        padding: 0;
+    .action-buttons {
+        display: flex;
+        gap: 5px;
     }
-
-    h1 {
-        text-align: center;
-        background-color: #3f8efc;
-        color: white;
-        padding: 15px;
-        margin: 0 0 20px;
-        font-size: 26px;
-    }
-
-    .add-student-container {
-        text-align: center;
-        margin: 20px 0;
-    }
-
-    .add-student-btn {
-        background-color: #3f8efc;
-        color: white;
-        padding: 10px 18px;
-        border: none;
-        border-radius: 5px;
-        font-weight: bold;
-        text-decoration: none;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .add-student-btn:hover {
-        background-color: #2e6edb;
-    }
-
-    #flash-message {
-        background-color: #e0f7e9;
-        color: #1b5e20;
-        border: 1px solid #a5d6a7;
-        padding: 10px;
-        margin: 10px auto;
-        width: 60%;
-        text-align: center;
-        border-radius: 4px;
-    }
-
-    .table-container {
-        width: 90%;
-        margin: auto;
-        background-color: white;
-        padding: 15px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-    }
-
-    th, td {
-        padding: 10px;
-        border: 1px solid #e0e0e0;
-        text-align: left;
-    }
-
-    th {
-        background-color: #e3f2fd; /* Soft blue */
-        color: #333;
-    }
-
-    tr:nth-child(even) {
-        background-color: #f5faff;
-    }
-
-    tr:hover {
-        background-color: #d0e6ff;
-    }
-
-    .btn {
+    
+    .action-buttons .btn {
         padding: 6px 10px;
-        font-size: 13px;
-        border-radius: 4px;
-        font-weight: 600;
-        text-decoration: none;
-        margin-right: 5px;
     }
-
-    .btn-info {
-        background-color: #4caf50;
+    
+    .badge-active, .badge-success {
+        background-color: var(--success);
         color: white;
     }
-
-    .btn-warning {
-        background-color: #ff9800;
+    
+    .badge-inactive, .badge-danger {
+        background-color: var(--danger);
         color: white;
     }
-
-    .btn-danger {
-        background-color: #f44336;
-        color: white;
+    
+    .badge-pending, .badge-warning {
+        background-color: var(--warning);
+        color: var(--dark);
     }
-
-    .btn:hover {
-        opacity: 0.9;
-    }
-
-    .pagination {
-        margin-top: 15px;
-        text-align: center;
-    }
-
-    .pagination a {
-        margin: 0 5px;
-        text-decoration: none;
-        color: #3f8efc;
-        padding: 6px 10px;
-        border-radius: 4px;
-    }
-
-    .pagination a:hover {
-        background-color: #e0ecff;
+    
+    .pagination-container {
+        margin-top: 20px;
     }
 </style>
-
-
-<h1>Student Information</h1>
-
-<div class="add-student-container">
-    <a href="/student/create" class="add-student-btn">➕ Add Student</a>
-
-    {{-- @if(session('message'))
-    <div class="alert alert-success">
-        {{ session('message') }}
-    </div>
-@endif --}}
-
-    @if(session("message"))
-        <div id="flash-message">
-            <strong>{{ session("message") }}</strong>
-        </div>
-    @endif
-</div>
-
-<div class="table-container">
-    <table>
-        <tr>
-            <th>Student ID</th>
-            <th>Full Name</th>
-            <th>Address</th>
-            <th>Contact Number</th>
-            <th>Actions</th>
-        </tr>
-
-        @if($students && $students->count() > 0)
-            @foreach($students as $stud)
-                <tr>
-                    <td>{{ $stud->studentid }}</td>
-                    <td>{{ $stud->lname }}, {{ $stud->fname }} {{ $stud->mname }}</td>
-                    <td>{{ $stud->address }}</td>
-                    <td>{{ $stud->contactno }}</td>
-                    <td>
-                        <a href="/student/{{$stud->id}}" class="btn btn-info">🔍 View Details</a>
-                        <a href="/student/{{$stud->id}}/edit" class="btn btn-warning">✏️ Edit</a>
-                        <form action="/student/{{$stud->id}}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <input type="submit" value="Delete" class="btn btn-danger">
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-        @endif
-    </table>
-    {{ $students->links() }}
-</div>
-
-<script>
-    
-    setTimeout(function () {
-        var flash = document.getElementById('flash-message');
-        if (flash) {
-            flash.style.opacity = '0';
-            setTimeout(() => flash.remove(), 1000);
-        }
-    }, 5000);
-</script>
 
 @endsection
 

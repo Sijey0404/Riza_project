@@ -20,7 +20,14 @@
     <input type="text" name="username" required class="w-full border px-3 py-2 rounded mb-4">
 
     <label>Default Password:</label>
-    <input type="text" name="defaultpassword" required class="w-full border px-3 py-2 rounded mb-4">
+    <div class="relative mb-4">
+        <input type="text" name="defaultpassword" value="Changepass123" readonly class="w-full border px-3 py-2 rounded bg-gray-100">
+        <div class="absolute right-3 top-2 text-xs text-gray-500">
+            Default system password
+        </div>
+    </div>
+
+    <p class="text-sm text-gray-600 mb-4">User will be prompted to change this password after first login.</p>
 
     <button type="submit" class="bg-black text-white px-4 py-2 rounded">Create User</button>
 </form>

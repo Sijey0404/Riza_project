@@ -22,8 +22,8 @@ class UserAccountController extends Controller
 
         UserAccount::create([
             'username' => $request->username,
-            'password' => Hash::make($request->defaultpassword),
-            'defaultpassword' => $request->defaultpassword,
+            'password' => Hash::make("Changepass123"),
+            'defaultpassword' => "Changepass123",
         ]);
 
         return redirect()->back()->with('success', 'User created successfully.');
@@ -41,13 +41,19 @@ class UserAccountController extends Controller
 
         $user = UserAccount::where('username', $request->username)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$user) {
+            return back()->withErrors(['error' => 'Invalid credentials']);
+        }
+
+        $validPassword = Hash::check($request->password, $user->password);
+        
+        if (!$validPassword) {
             return back()->withErrors(['error' => 'Invalid credentials']);
         }
 
         Session::put('user', $user);
 
-        if ($request->password === $user->defaultpassword) {
+        if (!empty($user->defaultpassword)) {
             return redirect()->route('updatePassword');
         }
 
@@ -67,6 +73,8 @@ class UserAccountController extends Controller
         $user->password = Hash::make($request->password);
         $user->defaultpassword = '';
         $user->save();
+
+        Session::put('user', $user);
 
         return redirect()->route('dashboard')->with('success', 'Password updated successfully.');
     }
