@@ -99,14 +99,15 @@ Route::post('/login', [UserAccountController::class, 'login'])->name('loginUser'
 Route::get('/new-user', [UserAccountController::class, 'showNewUserForm'])->name('showNewUserForm');
 Route::post('/store-user', [UserAccountController::class, 'storeNewUser'])->name('storeUser');
 
+// Logout route - publicly accessible
+Route::get('/logout', [UserAccountController::class, 'logout'])->name('logout');
+
 // Protected routes
 Route::middleware([SessionUserAccountMW::class])->group(function () {
     Route::get('/dashboard', [UserAccountController::class, 'dashboard'])->name('dashboard');
 
     Route::get('/update-password', [UserAccountController::class, 'showUpdatePasswordForm'])->name('updatePassword');
     Route::post('/update-password', [UserAccountController::class, 'updatePassword']);
-
-    Route::get('/logout', [UserAccountController::class, 'logout'])->name('logout');
 });
 
 

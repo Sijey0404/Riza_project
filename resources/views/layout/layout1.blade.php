@@ -405,6 +405,18 @@
             border-top: 1px solid var(--gray-light);
             margin-top: 20px;
         }
+        
+        .logout-btn {
+            margin-left: 10px;
+            color: var(--danger);
+            font-size: 20px;
+            transition: var(--transition);
+        }
+        
+        .logout-btn:hover {
+            color: #c82333;
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
@@ -446,13 +458,10 @@
                 <i class='bx bx-envelope'></i>
                 <span>Contact Us</span>
             </a>
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-danger" style="width: 100%; text-align: left; margin-top: 20px;">
-                    <i class='bx bx-log-out'></i>
-                    <span>Logout</span>
-                </button>
-            </form>
+            <a href="{{ route('logout') }}" class="btn btn-danger" style="width: 100%; text-align: left; margin-top: 20px;">
+                <i class='bx bx-log-out'></i>
+                <span>Logout</span>
+            </a>
         </div>
     </aside>
     
@@ -465,6 +474,9 @@
             <div class="user-info">
                 <i class='bx bxs-user-circle' style="font-size: 24px;"></i>
                 <span>{{ session('user.username') ?? 'User' }}</span>
+                <a href="{{ route('logout') }}" class="logout-btn" title="Logout">
+                    <i class='bx bx-log-out'></i>
+                </a>
             </div>
         </div>
         
@@ -501,6 +513,20 @@
                 flashMessage.style.display = 'none';
             }, 5000);
         }
+        
+        // Handle logout with GET method
+        function handleLogout(event) {
+            event.preventDefault();
+            window.location.href = "{{ route('logout') }}";
+        }
+        
+        // Add event listeners to logout buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutLinks = document.querySelectorAll('a[href="{{ route("logout") }}"]');
+            logoutLinks.forEach(link => {
+                link.addEventListener('click', handleLogout);
+            });
+        });
     </script>
 </body>
 </html>
